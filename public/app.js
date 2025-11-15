@@ -84,20 +84,18 @@ createApp({
                     priority: todo.priority,
                     due_date: todo.due_date
                 });
+                
+                // 完了したタスクを画面から削除
+                if (todo.completed) {
+                    this.todos = this.todos.filter(t => t.id !== todo.id);
+                }
             } catch (error) {
                 console.error('TODOの更新に失敗:', error);
                 await this.fetchTodos();
             }
         },
         
-        async deleteTodo(id) {
-            try {
-                await axios.delete(`api.php?id=${id}`);
-                this.todos = this.todos.filter(todo => todo.id !== id);
-            } catch (error) {
-                console.error('TODOの削除に失敗:', error);
-            }
-        },
+
         
         startEdit(todo) {
             todo.editing = true;
