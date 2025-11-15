@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO SPA</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #404040 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid #404040;
+        }
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+        .add-todo {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .add-todo input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid #404040;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            transition: all 0.3s;
+        }
+        .add-todo input[type="text"]:focus {
+            outline: none;
+            border-color: #666;
+            background: #252525;
+        }
+        .add-todo select, .add-todo input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid #404040;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            cursor: pointer;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 1px solid #404040;
+            border-radius: 12px;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            color: #e0e0e0;
+        }
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            border-color: #555;
+        }
+        .todo-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+        .todo-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .edit-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .priority {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .priority-high { background: #ff6b6b; color: white; }
+        .priority-medium { background: #ffd93d; color: #333; }
+        .priority-low { background: #6bcf7f; color: white; }
+        .due-date {
+            font-size: 13px;
+            color: #aaa;
+            background: #1a1a1a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #404040;
+        }
+        .todo-item button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #6a6a6a 0%, #5a5a5a 100%);
+            font-size: 13px;
+            border: 1px solid #777;
+        }
+        .todo-item button:hover {
+            background: linear-gradient(135deg, #7a7a7a 0%, #6a6a6a 100%);
+        }
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            #app { padding: 20px; border-radius: 15px; }
+            h1 { font-size: 24px; margin-bottom: 20px; }
+            .add-todo { flex-direction: column; }
+            .add-todo input[type="text"], .add-todo select, .add-todo input[type="date"], button {
+                width: 100%;
+            }
+            .todo-item {
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+            .todo-item span:first-of-type {
+                flex: 1 1 100%;
+                margin-bottom: 8px;
+            }
+            .priority, .due-date {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>TODO リスト</h1>
+        
+        <div style="margin-bottom: 20px; text-align: center;">
+            <label style="color: #aaa; margin-right: 10px;">並び替え:</label>
+            <select v-model="sortBy" style="padding: 8px 16px; border: 2px solid #404040; border-radius: 10px; background: #1a1a1a; color: #e0e0e0; cursor: pointer;">
+                <option value="priority">優先順</option>
+                <option value="due_date">期限順</option>
+            </select>
+        </div>
+        
+        <div class="add-todo">
+            <input 
+                type="text"
+                v-model="newTodo" 
+                @keyup.enter="addTodo"
+                placeholder="新しいTODOを入力..."
+            >
+            <select v-model="newPriority">
+                <option value="high">高</option>
+                <option value="medium">中</option>
+                <option value="low">低</option>
+            </select>
+            <input 
+                type="text"
+                v-model="newDueDate"
+                @input="formatDueDate"
+                placeholder="期限 (例: 1225)"
+                maxlength="5"
+            >
+            <button @click="addTodo">追加</button>
+        </div>
+
+        <div v-for="todo in sortedTodos" :key="todo.id" class="todo-item" :class="{ completed: todo.completed }">
+            <input 
+                type="checkbox" 
+                v-model="todo.completed" 
+                @change="updateTodo(todo)"
+            >
+            
+            <span v-if="!todo.editing" @dblclick="startEdit(todo)" style="flex: 1;">
+                {{ todo.title }}
+            </span>
+            
+            <input 
+                v-if="todo.editing"
+                v-model="todo.title"
+                @keyup.enter="finishEdit(todo)"
+                @blur="finishEdit(todo)"
+                class="edit-input"
+                ref="editInput"
+                style="flex: 1;"
+            >
+            
+            <span class="priority" :class="'priority-' + todo.priority">
+                {{ todo.priority === 'high' ? '高' : todo.priority === 'medium' ? '中' : '低' }}
+            </span>
+            
+            <span v-if="todo.due_date" class="due-date">
+                {{ formatDate(todo.due_date) }}
+            </span>
+            
+            <button @click="todo.completed = !todo.completed; updateTodo(todo)">{{ todo.completed ? '未完了' : '完了' }}</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

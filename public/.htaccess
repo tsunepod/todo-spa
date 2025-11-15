@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# API routes
+RewriteRule ^api/todos$ api.php [L]
+RewriteRule ^api/todos/([0-9]+)$ api.php [L]
+
+# SPA fallback
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(?!api/).*$ index.html [L]
