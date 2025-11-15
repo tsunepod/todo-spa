@@ -78,16 +78,16 @@ createApp({
         
         async updateTodo(todo) {
             try {
-                await axios.put(`api.php?id=${todo.id}`, {
-                    title: todo.title,
-                    completed: todo.completed,
-                    priority: todo.priority,
-                    due_date: todo.due_date
-                });
-                
-                // 完了したタスクを画面から削除
                 if (todo.completed) {
+                    await axios.delete(`api.php?id=${todo.id}`);
                     this.todos = this.todos.filter(t => t.id !== todo.id);
+                } else {
+                    await axios.put(`api.php?id=${todo.id}`, {
+                        title: todo.title,
+                        completed: todo.completed,
+                        priority: todo.priority,
+                        due_date: todo.due_date
+                    });
                 }
             } catch (error) {
                 console.error('TODOの更新に失敗:', error);

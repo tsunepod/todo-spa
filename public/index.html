@@ -196,13 +196,7 @@
             <button @click="addTodo">追加</button>
         </div>
 
-        <div v-for="todo in sortedTodos" :key="todo.id" class="todo-item" :class="{ completed: todo.completed }">
-            <input 
-                type="checkbox" 
-                v-model="todo.completed" 
-                @change="updateTodo(todo)"
-            >
-            
+        <div v-for="todo in sortedTodos" :key="todo.id" class="todo-item">
             <span v-if="!todo.editing" @dblclick="startEdit(todo)" style="flex: 1;">
                 {{ todo.title }}
             </span>
@@ -225,10 +219,10 @@
                 {{ formatDate(todo.due_date) }}
             </span>
             
-            <button @click="todo.completed = !todo.completed; updateTodo(todo)">{{ todo.completed ? '未完了' : '完了' }}</button>
+            <button @click="todo.completed = true; updateTodo(todo)">完了</button>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
